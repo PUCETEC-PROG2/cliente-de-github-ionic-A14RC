@@ -3,9 +3,9 @@
 
 ## Información del Estudiante
 
-- **Nombre:** [Tu nombre completo aquí]
-- **Carrera:** [Tu carrera]
-- **Fecha de inicio:** [Fecha]
+- **Nombre:** Andrés Romero Castillo.
+- **Carrera:** Desarrollo de Software
+- **Fecha de inicio:** 02-Dic-2025
 
 ---
 
