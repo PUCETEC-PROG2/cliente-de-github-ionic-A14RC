@@ -1,18 +1,30 @@
+import React, { useState, useEffect } from 'react';
 import { 
-  IonContent, 
-  IonHeader, 
-  IonPage, 
-  IonTitle, 
-  IonToolbar,
-  IonCard,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
-  IonCardContent
+  IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
+  IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent,
+  IonSpinner
 } from '@ionic/react';
+import { githubService } from '../services/github.service';
 import './Tab3.css';
 
 const Tab3: React.FC = () => {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const data = await githubService.getUser();
+        setUser(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
+
   return (
     <IonPage>
       <IonHeader>
@@ -27,26 +39,43 @@ const Tab3: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         
-        {/* TARJETA TIPO COVER */}
-        <IonCard style={{ marginTop: '20px' }}>
-          {}
-          <div style={{ height: '150px', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-             {}
-             <div style={{ width: '40px', height: '40px', background: '#ccc', borderRadius: '50%', marginLeft: '100px', marginBottom: '50px' }}></div>
-             {}
-             <div style={{ position: 'absolute', marginTop: '50px', width: 0, height: 0, borderLeft: '50px solid transparent', borderRight: '50px solid transparent', borderBottom: '80px solid #555', transform: 'translateX(-40px)' }}></div>
-             <div style={{ position: 'absolute', marginTop: '50px', width: 0, height: 0, borderLeft: '40px solid transparent', borderRight: '40px solid transparent', borderBottom: '60px solid #777', transform: 'translateX(40px)' }}></div>
-          </div>
+        {loading ? (
+           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+             <IonSpinner name="dots" />
+           </div>
+        ) : user ? (
+          <IonCard style={{ marginTop: '20px' }}>
+            <div style={{ height: '120px', background: '#24292e', position: 'relative' }}>
+               <img 
+                 src={user.avatar_url} 
+                 alt="Profile" 
+                 style={{ 
+                   width: '80px', height: '80px', borderRadius: '50%', border: '4px solid white',
+                   position: 'absolute', bottom: '-40px', left: '20px'
+                 }} 
+               />
+            </div>
 
-          <IonCardHeader>
-            <IonCardSubtitle style={{ fontSize: '10px', letterSpacing: '1px' }}>Andrés Ricardo Romero Castillo</IonCardSubtitle>
-            <IonCardTitle style={{ fontSize: '22px', fontWeight: 'bold', color: 'black' }}>ARRC</IonCardTitle>
-          </IonCardHeader>
+            <IonCardHeader style={{ marginTop: '40px' }}>
+              <IonCardSubtitle style={{ fontSize: '12px' }}>@{user.login}</IonCardSubtitle>
+              <IonCardTitle style={{ fontSize: '22px', fontWeight: 'bold' }}>{user.name || user.login}</IonCardTitle>
+            </IonCardHeader>
 
-          <IonCardContent>
-            Este es el perfil de Andrés Ricardo Romero Castillo, estudiante de desarrollo móvil.
-          </IonCardContent>
-        </IonCard>
+            <IonCardContent>
+              <p style={{ marginBottom: '15px' }}>{user.bio || "Sin biografía disponible"}</p>
+              
+              <div style={{ display: 'flex', gap: '20px', fontWeight: 'bold', fontSize: '14px' }}>
+                <span>{user.public_repos} <span style={{fontWeight:'normal'}}>Repos</span></span>
+                <span>{user.followers} <span style={{fontWeight:'normal'}}>Seguidores</span></span>
+                <span>{user.following} <span style={{fontWeight:'normal'}}>Siguiendo</span></span>
+              </div>
+              
+              {user.location && <p style={{ marginTop: '10px', fontSize: '12px', color: '#666' }}>📍 {user.location}</p>}
+            </IonCardContent>
+          </IonCard>
+        ) : (
+          <p style={{textAlign: 'center'}}>No se pudo cargar el usuario.</p>
+        )}
 
       </IonContent>
     </IonPage>
