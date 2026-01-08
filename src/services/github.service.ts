@@ -12,8 +12,6 @@ const api = axios.create({
 });
 
 export const githubService = {
-  
-
   getRepos: async () => {
     const response = await api.get('/user/repos?sort=updated&direction=desc');
     return response.data;
@@ -24,16 +22,26 @@ export const githubService = {
     return response.data;
   },
 
-  
   createRepo: async (name: string, description: string, isPrivate: boolean) => {
-    const body = {
-      name: name,
-      description: description,
+    const response = await api.post('/user/repos', {
+      name,
+      description,
       private: isPrivate,
       auto_init: true 
-    };
-    
-    const response = await api.post('/user/repos', body); 
+    });
     return response.data;
+  },
+
+  updateRepo: async (owner: string, repo: string, name: string, description: string) => {
+    const response = await api.patch(`/repos/${owner}/${repo}`, {
+      name,
+      description
+    });
+    return response.data;
+  },
+
+  deleteRepo: async (owner: string, repo: string) => {
+    const response = await api.delete(`/repos/${owner}/${repo}`);
+    return response.status === 204;
   }
 };
